@@ -1,0 +1,5 @@
+node_modules
+/.clerk/
+.env
+.env.local
+__pycache__

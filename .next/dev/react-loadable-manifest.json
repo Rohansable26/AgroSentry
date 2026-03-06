@@ -1,0 +1,30 @@
+{
+  "components\\FlightControlDashboard.tsx -> ./LiveDroneMap": {
+    "id": "components\\FlightControlDashboard.tsx -> ./LiveDroneMap",
+    "files": [
+      "static/chunks/_app-pages-browser_components_LiveDroneMap_tsx.js"
+    ]
+  },
+  "components\\MissionPlanner.tsx -> react-leaflet": {
+    "id": "components\\MissionPlanner.tsx -> react-leaflet",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_pnpm_react-leaflet_5_0_0_leaflet_a4aa88acb150c9aa45476693c130-4dc9fe.js"
+    ]
+  },
+  "node_modules\\.pnpm\\@clerk+nextjs@6.39.0_next@1_0992a01a96882f8b7ef738da2301e33c\\node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\ClerkProvider.js -> ./keyless-creator-reader.js": {
+    "id": "node_modules\\.pnpm\\@clerk+nextjs@6.39.0_next@1_0992a01a96882f8b7ef738da2301e33c\\node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\ClerkProvider.js -> ./keyless-creator-reader.js",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_pnpm_clerk_nextjs_6_39_0_next_1_0992a01a96882f8b7ef738da2301e-308bef.js"
+    ]
+  },
+  "node_modules\\.pnpm\\@clerk+nextjs@6.39.0_next@1_0992a01a96882f8b7ef738da2301e33c\\node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\keyless-cookie-sync.js -> ../keyless-actions.js": {
+    "id": "node_modules\\.pnpm\\@clerk+nextjs@6.39.0_next@1_0992a01a96882f8b7ef738da2301e33c\\node_modules\\@clerk\\nextjs\\dist\\esm\\app-router\\client\\keyless-cookie-sync.js -> ../keyless-actions.js",
+    "files": []
+  },
+  "node_modules\\.pnpm\\next@16.1.6_@babel+core@7.2_9d8d1bf7a8807769963b5151bd760c41\\node_modules\\next\\dist\\client\\dev\\hot-reloader\\app\\web-socket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts": {
+    "id": "node_modules\\.pnpm\\next@16.1.6_@babel+core@7.2_9d8d1bf7a8807769963b5151bd760c41\\node_modules\\next\\dist\\client\\dev\\hot-reloader\\app\\web-socket.js -> @vercel/turbopack-ecmascript-runtime/browser/dev/hmr-client/hmr-client.ts",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_pnpm_next_16_1_6__babel_core_7_2_9d8d1bf7a8807769963b5151bd76-725e67.js"
+    ]
+  }
+}

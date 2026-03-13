@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { SystemStatusBar } from "./SystemStatusBar";
 import { LiveVideoViewer } from "./LiveVideoViewer";
 import { TelemetryPanel } from "./TelemetryPanel";
@@ -10,7 +10,6 @@ import { AnalyticsSnapshot } from "./AnalyticsSnapshot";
 import { DetectionControlBar } from "./DetectionControlBar";
 
 export const CommandCenter = () => {
-    // --- MOCK STATE ---
     const [telemetry, setTelemetry] = useState({
         altitude: 12.4,
         speed: 5.2,
@@ -23,24 +22,75 @@ export const CommandCenter = () => {
     });
 
     const [aiMetrics, setAiMetrics] = useState({
-        fps: 24,
-        latency: 12,
-        status: "RUNNING" as const,
+        fps: 0,
+        latency: 0,
+        status: "PAUSED" as "RUNNING" | "PAUSED" | "ERROR",
     });
 
     const [sprayStatus, setSprayStatus] = useState({
         mode: "AUTO" as const,
-        state: "ACTIVE" as const,
-        pressure: 2.4,
-        rpm: 1280,
-        volumeUsed: 4.82,
-        severity: "NORMAL" as const,
+        state: "IDLE" as "ACTIVE" | "IDLE",
+        pressure: 0,
+        rpm: 0,
+        volumeUsed: 0,
+        severity: "NORMAL" as "LOW" | "NORMAL" | "HIGH" | "CRITICAL",
     });
 
-    // --- MOCK REAL-TIME UPDATES ---
+    const [pipelineOnline, setPipelineOnline] = useState(false);
+    const [detectionCount, setDetectionCount] = useState(0);
+
+    // --- LIVE DATA from blight_detection backend ---
+    const fetchLiveStatus = useCallback(async () => {
+        try {
+            const res = await fetch("/api/detection-status", { cache: "no-store" });
+            if (!res.ok) { setPipelineOnline(false); return; }
+            const data = await res.json();
+
+            setPipelineOnline(data.status === "RUNNING");
+            setDetectionCount(data.detection_count ?? 0);
+
+            setAiMetrics({
+                fps: Math.round(data.fps ?? 0),
+                latency: data.fps > 0 ? Math.round(1000 / data.fps) : 0,
+                status: data.status === "RUNNING" ? "RUNNING" : data.status === "ERROR" ? "ERROR" : "PAUSED",
+            });
+        } catch {
+            setPipelineOnline(false);
+        }
+    }, []);
+
+    const fetchSprayStatus = useCallback(async () => {
+        try {
+            const res = await fetch("/api/spray-stats", { cache: "no-store" });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            const avgSev = data.average_severity ?? 0;
+            let severity: "LOW" | "NORMAL" | "HIGH" | "CRITICAL" = "NORMAL";
+            if (avgSev > 60) severity = "CRITICAL";
+            else if (avgSev > 40) severity = "HIGH";
+            else if (avgSev > 20) severity = "NORMAL";
+            else severity = "LOW";
+
+            setSprayStatus(prev => ({
+                ...prev,
+                state: (data.total_sprays ?? 0) > 0 ? "ACTIVE" : "IDLE",
+                volumeUsed: (data.total_sprays ?? 0) * 0.25,
+                severity,
+            }));
+        } catch { /* ignore */ }
+    }, []);
+
+    useEffect(() => {
+        fetchLiveStatus();
+        fetchSprayStatus();
+        const id = setInterval(() => { fetchLiveStatus(); fetchSprayStatus(); }, 2000);
+        return () => clearInterval(id);
+    }, [fetchLiveStatus, fetchSprayStatus]);
+
+    // Simulated telemetry (drone data still mock until MAVLink integration)
     useEffect(() => {
         const interval = setInterval(() => {
-            // Update Telemetry
             setTelemetry(prev => ({
                 ...prev,
                 altitude: Math.max(0, prev.altitude + (Math.random() * 0.4 - 0.2)),
@@ -52,19 +102,10 @@ export const CommandCenter = () => {
                 windSpeed: Math.max(0, prev.windSpeed + (Math.random() * 0.4 - 0.2)),
             }));
 
-            // Update AI Metrics
-            setAiMetrics(prev => ({
-                ...prev,
-                fps: Math.floor(22 + Math.random() * 6),
-                latency: Math.floor(10 + Math.random() * 5),
-            }));
-
-            // Update Spray Status
             setSprayStatus(prev => ({
                 ...prev,
-                volumeUsed: prev.state === "ACTIVE" ? prev.volumeUsed + 0.005 : prev.volumeUsed,
                 pressure: prev.state === "ACTIVE" ? 2.3 + Math.random() * 0.2 : 0,
-                rpm: prev.state === "ACTIVE" ? 1200 + Math.random() * 200 : 0,
+                rpm: prev.state === "ACTIVE" ? 1200 + Math.floor(Math.random() * 200) : 0,
             }));
         }, 2000);
 
@@ -75,12 +116,12 @@ export const CommandCenter = () => {
         <div className="flex flex-col h-full bg-[#0d1117] text-gray-300 font-sans border-0 rounded-tl-2xl overflow-hidden">
             {/* 1. SYSTEM STATUS BAR (Full Width) */}
             <SystemStatusBar
-                status="ONLINE"
+                status={pipelineOnline ? "ONLINE" : "OFFLINE"}
                 battery={Math.floor(telemetry.battery)}
                 gpsLock={true}
                 windSpeed={telemetry.windSpeed}
                 flightMode="AUTO"
-                missionState="ACTIVE"
+                missionState={pipelineOnline ? "ACTIVE" : "IDLE"}
             />
 
             {/* SCROLLABLE CONTENT AREA */}

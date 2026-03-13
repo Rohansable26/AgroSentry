@@ -101,6 +101,96 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../../app/api/blight-status/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/blight-status">> = Specific
+  const handler = {} as typeof import("../../../app/api/blight-status/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/detection-history/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/detection-history">> = Specific
+  const handler = {} as typeof import("../../../app/api/detection-history/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/detection-status/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/detection-status">> = Specific
+  const handler = {} as typeof import("../../../app/api/detection-status/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/disease-distribution/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/disease-distribution">> = Specific
+  const handler = {} as typeof import("../../../app/api/disease-distribution/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/flight-control/missions/[id]/activate/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/missions/[id]/activate">> = Specific
+  const handler = {} as typeof import("../../../app/api/flight-control/missions/[id]/activate/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/flight-control/missions/[id]/generate-grid/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/missions/[id]/generate-grid">> = Specific
+  const handler = {} as typeof import("../../../app/api/flight-control/missions/[id]/generate-grid/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/flight-control/missions/[id]/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/missions/[id]">> = Specific
+  const handler = {} as typeof import("../../../app/api/flight-control/missions/[id]/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/flight-control/missions/[id]/simulate/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/missions/[id]/simulate">> = Specific
+  const handler = {} as typeof import("../../../app/api/flight-control/missions/[id]/simulate/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/flight-control/missions/[id]/validate/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/missions/[id]/validate">> = Specific
+  const handler = {} as typeof import("../../../app/api/flight-control/missions/[id]/validate/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/flight-control/missions/[id]/waypoints/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/missions/[id]/waypoints">> = Specific
+  const handler = {} as typeof import("../../../app/api/flight-control/missions/[id]/waypoints/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../../app/api/flight-control/missions/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/missions">> = Specific
@@ -137,73 +227,10 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
-// Validate ../../../app/api/test-db/route.ts
+// Validate ../../../app/api/spray-stats/route.ts
 {
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/test-db">> = Specific
-  const handler = {} as typeof import("../../../app/api/test-db/route.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-
-
-
-
-// Validate ../../../app/(marketing)/layout.tsx
-{
-  type __IsExpected<Specific extends LayoutConfig<"/">> = Specific
-  const handler = {} as typeof import("../../../app/(marketing)/layout.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../../app/dashboard/layout.tsx
-{
-  type __IsExpected<Specific extends LayoutConfig<"/dashboard">> = Specific
-  const handler = {} as typeof import("../../../app/dashboard/layout.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../../app/test/layout.tsx
-{
-  type __IsExpected<Specific extends LayoutConfig<"/test">> = Specific
-  const handler = {} as typeof import("../../../app/test/layout.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-import("../../../app/api/flight-control/missions/route.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../../app/api/flight-control/telemetry/route.ts
-{
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/telemetry">> = Specific
-  const handler = {} as typeof import("../../../app/api/flight-control/telemetry/route.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../../app/api/flight-control/waypoints/route.ts
-{
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/flight-control/waypoints">> = Specific
-  const handler = {} as typeof import("../../../app/api/flight-control/waypoints/route.js")
-  type __Check = __IsExpected<typeof handler>
-  // @ts-ignore
-  type __Unused = __Check
-}
-
-// Validate ../../../app/api/google-api-test/route.ts
-{
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/google-api-test">> = Specific
-  const handler = {} as typeof import("../../../app/api/google-api-test/route.js")
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/spray-stats">> = Specific
+  const handler = {} as typeof import("../../../app/api/spray-stats/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
@@ -213,6 +240,15 @@ import("../../../app/api/flight-control/missions/route.js")
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/test-db">> = Specific
   const handler = {} as typeof import("../../../app/api/test-db/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/api/video-stream/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/video-stream">> = Specific
+  const handler = {} as typeof import("../../../app/api/video-stream/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

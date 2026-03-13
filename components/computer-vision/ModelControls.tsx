@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CVCard } from "@/components/ui/cv-card";
 import {
     IconRefresh,
@@ -20,6 +20,29 @@ export const ModelControls = () => {
     const [showBoxes, setShowBoxes] = useState(true);
     const [showMasks, setShowMasks] = useState(false);
     const [showHeatmap, setShowHeatmap] = useState(false);
+
+    const [vitals, setVitals] = useState({ fps: 0, latency: 0, status: "OFFLINE" });
+
+    useEffect(() => {
+        let active = true;
+        const poll = async () => {
+            try {
+                const res = await fetch("/api/detection-status", { cache: "no-store" });
+                if (!res.ok) return;
+                const d = await res.json();
+                if (active) {
+                    setVitals({
+                        fps: d.fps ?? 0,
+                        latency: d.fps > 0 ? Math.round(1000 / d.fps) : 0,
+                        status: d.status ?? "OFFLINE",
+                    });
+                }
+            } catch { /* ignore */ }
+        };
+        poll();
+        const id = setInterval(poll, 3000);
+        return () => { active = false; clearInterval(id); };
+    }, []);
 
     return (
         <CVCard className="p-0 overflow-visible border-none bg-transparent shadow-none" glow={false}>
@@ -121,9 +144,9 @@ export const ModelControls = () => {
                     </div>
 
                     <div className="flex flex-col gap-3">
-                        <StatRow icon={<IconBolt size={14} />} label="Inference" value="12.4 FPS" color="text-green-400" />
-                        <StatRow icon={<IconClock size={14} />} label="Latency" value="32ms" color="text-yellow-400" />
-                        <StatRow icon={<IconCpu size={14} />} label="GPU Load" value="68%" color="text-blue-400" />
+                        <StatRow icon={<IconBolt size={14} />} label="Inference" value={`${vitals.fps.toFixed(1)} FPS`} color="text-green-400" />
+                        <StatRow icon={<IconClock size={14} />} label="Latency" value={`${vitals.latency}ms`} color="text-yellow-400" />
+                        <StatRow icon={<IconCpu size={14} />} label="Pipeline" value={vitals.status} color={vitals.status === "RUNNING" ? "text-green-400" : "text-red-400"} />
                     </div>
                 </div>
 

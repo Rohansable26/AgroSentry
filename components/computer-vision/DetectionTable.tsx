@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CVCard } from "@/components/ui/cv-card";
 import { IconHistory, IconEye } from "@tabler/icons-react";
 
@@ -12,16 +12,33 @@ interface Detection {
     confidence: number;
 }
 
-const tableData: Detection[] = [
-    { id: "1", timestamp: "2024-05-22 14:32:10", field: "Zone 3", pest: "Aphids", confidence: 94 },
-    { id: "2", timestamp: "2024-05-22 14:30:05", field: "Zone 4", pest: "Leaf Blight", confidence: 88 },
-    { id: "3", timestamp: "2024-05-22 14:28:45", field: "Zone 1", pest: "Aphids", confidence: 91 },
-    { id: "4", timestamp: "2024-05-22 14:25:22", field: "Zone 7", pest: "Rust", confidence: 76 },
-    { id: "5", timestamp: "2024-05-22 14:20:15", field: "Zone 3", pest: "Mites", confidence: 82 },
-    { id: "6", timestamp: "2024-05-22 14:15:00", field: "Zone 5", pest: "Aphids", confidence: 95 },
-];
-
 export const DetectionTable = () => {
+    const [tableData, setTableData] = useState<Detection[]>([]);
+
+    useEffect(() => {
+        let active = true;
+        const poll = async () => {
+            try {
+                const res = await fetch("/api/detection-history?limit=20", { cache: "no-store" });
+                if (!res.ok) return;
+                const raw = await res.json();
+                if (!active || !Array.isArray(raw)) return;
+                const mapped: Detection[] = raw.map((d: any, i: number) => ({
+                    id: String(d.frame_id ?? i),
+                    timestamp: d.timestamp
+                        ? new Date(d.timestamp * 1000).toLocaleString()
+                        : "—",
+                    field: d.severity > 40 ? "HIGH" : d.severity > 20 ? "MED" : "LOW",
+                    pest: (d.disease_class ?? "Unknown").replace(/_/g, " "),
+                    confidence: Math.round((d.confidence ?? 0) * 100),
+                }));
+                setTableData(mapped.reverse());
+            } catch { /* ignore */ }
+        };
+        poll();
+        const id = setInterval(poll, 5000);
+        return () => { active = false; clearInterval(id); };
+    }, []);
     return (
         <CVCard>
             <div className="flex items-center justify-between mb-6">

@@ -1,0 +1,50 @@
+{
+  "drone": {
+    "connection_string": "tcp:127.0.0.1:5760",
+    "baudrate": 115200,
+    "timeout": 30
+  },
+  "camera": {
+    "device": 0,
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "model": {
+    "model_type": "keras",
+    "path": "model.h5",
+    "yolo_path": "yolov8n.pt",
+    "conf_threshold": 0.1,
+    "iou_threshold": 0.4
+  },
+  "missions": {
+    "autonomous_survey": {
+      "grid_size": 2,
+      "altitude": 5,
+      "speed": 2
+    },
+    "search_and_track": {
+      "spiral_radius": 20,
+      "altitude": 10,
+      "speed": 3
+    },
+    "perimeter_patrol": {
+      "boundary_points": [[0,0], [10,0], [10,10], [0,10]],
+      "altitude": 8,
+      "speed": 2.5
+    },
+    "manual_control": {
+      "hover_altitude": 5
+    }
+  },
+  "output": {
+    "data_dir": "./drone_data",
+    "save_images": true,
+    "telemetry_interval": 1.0
+  },
+  "simulation": {
+    "enabled": true,
+    "mock_drone": true,
+    "mock_camera": true
+  }
+}

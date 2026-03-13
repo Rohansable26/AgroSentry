@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CVCard } from "@/components/ui/cv-card";
 import {
     BarChart,
@@ -14,18 +14,58 @@ import {
 } from "recharts";
 import { IconChartBar, IconActivity, IconPercentage } from "@tabler/icons-react";
 
-const pestData = [
-    { name: "Aphids", value: 45 },
-    { name: "Blight", value: 32 },
-    { name: "Rust", value: 12 },
-    { name: "Mites", value: 8 },
-];
-
-const sparklineData = [
-    { v: 10 }, { v: 15 }, { v: 12 }, { v: 18 }, { v: 25 }, { v: 22 }, { v: 30 }
-];
-
 export const DetectionSummary = () => {
+    const [pestData, setPestData] = useState([
+        { name: "Aphids", value: 0 },
+        { name: "Blight", value: 0 },
+        { name: "Rust", value: 0 },
+        { name: "Healthy", value: 0 },
+    ]);
+
+    const [healthScore, setHealthScore] = useState(100);
+    const [damageArea, setDamageArea] = useState(0);
+    const [damageHistory, setDamageHistory] = useState([{ v: 0 }]);
+    const [healthLabel, setHealthLabel] = useState("OPTIMAL");
+
+    useEffect(() => {
+        let active = true;
+        const poll = async () => {
+            try {
+                // Fetch disease distribution
+                const distRes = await fetch("/api/disease-distribution", { cache: "no-store" });
+                if (distRes.ok) {
+                    const dist = await distRes.json();
+                    const entries = Object.entries(dist) as [string, number][];
+                    if (entries.length > 0 && active) {
+                        const total = entries.reduce((s, [, v]) => s + (v as number), 0);
+                        const healthyCount = entries
+                            .filter(([k]) => k.toLowerCase().includes("healthy"))
+                            .reduce((s, [, v]) => s + (v as number), 0);
+                        const diseased = total - healthyCount;
+
+                        const mapped = entries
+                            .sort(([, a], [, b]) => (b as number) - (a as number))
+                            .slice(0, 6)
+                            .map(([name, value]) => ({
+                                name: name.replace(/_/g, " ").split(" ").pop() || name,
+                                value: value as number,
+                            }));
+                        setPestData(mapped);
+
+                        const score = total > 0 ? Math.round((healthyCount / total) * 100) : 100;
+                        setHealthScore(score);
+                        setHealthLabel(score > 80 ? "OPTIMAL" : score > 50 ? "MODERATE" : "CRITICAL");
+                        const dmg = total > 0 ? parseFloat(((diseased / total) * 100).toFixed(1)) : 0;
+                        setDamageArea(dmg);
+                        setDamageHistory(prev => [...prev.slice(-6), { v: dmg }]);
+                    }
+                }
+            } catch { /* ignore */ }
+        };
+        poll();
+        const id = setInterval(poll, 4000);
+        return () => { active = false; clearInterval(id); };
+    }, []);
     return (
         <div className="flex flex-col gap-4 h-full">
             {/* Pest Distribution */}
@@ -67,7 +107,7 @@ export const DetectionSummary = () => {
                             />
                             <path
                                 className="text-green-500"
-                                strokeDasharray="84, 100"
+                                strokeDasharray={`${healthScore}, 100`}
                                 stroke="currentColor"
                                 strokeWidth="3"
                                 strokeLinecap="round"
@@ -76,12 +116,12 @@ export const DetectionSummary = () => {
                             />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-sm font-bold text-white font-mono">84%</span>
+                            <span className="text-sm font-bold text-white font-mono">{healthScore}%</span>
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-xs font-bold text-green-400">OPTIMAL</span>
-                        <span className="text-[10px] text-gray-500 leading-tight">Within target range for Zone 04</span>
+                        <span className={`text-xs font-bold ${healthScore > 80 ? 'text-green-400' : healthScore > 50 ? 'text-yellow-400' : 'text-red-400'}`}>{healthLabel}</span>
+                        <span className="text-[10px] text-gray-500 leading-tight">Live detection health index</span>
                     </div>
                 </div>
             </CVCard>
@@ -94,12 +134,12 @@ export const DetectionSummary = () => {
                 </h3>
                 <div className="flex items-end justify-between">
                     <div>
-                        <span className="text-2xl font-bold text-white font-mono">4.2%</span>
-                        <span className="text-[10px] text-red-400 ml-2">↑ 0.8%</span>
+                        <span className="text-2xl font-bold text-white font-mono">{damageArea}%</span>
+                        <span className="text-[10px] text-red-400 ml-2">{damageArea > 0 ? '↑' : '—'}</span>
                     </div>
                     <div className="h-8 w-20">
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={sparklineData}>
+                            <LineChart data={damageHistory}>
                                 <Line type="monotone" dataKey="v" stroke="#ef4444" strokeWidth={2} dot={false} />
                             </LineChart>
                         </ResponsiveContainer>

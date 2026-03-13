@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface AnalyticsCardProps {
@@ -20,32 +20,65 @@ const AnalyticsCard = ({ label, value, subValue }: AnalyticsCardProps) => (
 );
 
 export const AnalyticsSnapshot = () => {
+    const [stats, setStats] = useState({
+        detections: 0,
+        fps: 0,
+        sprays: 0,
+        frames: 0,
+        status: "OFFLINE",
+    });
+
+    useEffect(() => {
+        let active = true;
+        const poll = async () => {
+            try {
+                const [statusRes, sprayRes] = await Promise.all([
+                    fetch("/api/detection-status", { cache: "no-store" }),
+                    fetch("/api/spray-stats", { cache: "no-store" }),
+                ]);
+                if (!active) return;
+                const statusData = statusRes.ok ? await statusRes.json() : {};
+                const sprayData = sprayRes.ok ? await sprayRes.json() : {};
+                setStats({
+                    detections: statusData.detection_count ?? 0,
+                    fps: statusData.fps ?? 0,
+                    sprays: sprayData.total_sprays ?? 0,
+                    frames: statusData.frame_count ?? 0,
+                    status: statusData.status ?? "OFFLINE",
+                });
+            } catch { /* ignore */ }
+        };
+        poll();
+        const id = setInterval(poll, 3000);
+        return () => { active = false; clearInterval(id); };
+    }, []);
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             <AnalyticsCard
-                label="Fields Scanned"
-                value="12/24"
-                subValue="+2.5% vs avg"
+                label="Pipeline Status"
+                value={stats.status}
+                subValue={stats.status === "RUNNING" ? "All systems go" : "Start server"}
             />
             <AnalyticsCard
-                label="Pests Detected"
-                value="1,482"
-                subValue="YOLOv8 Active"
+                label="Detections"
+                value={stats.detections.toLocaleString()}
+                subValue="YOLOv8 + ResNet18"
             />
             <AnalyticsCard
-                label="Spray Volume"
-                value="48.5 L"
-                subValue="Remaining: 12.5L"
+                label="Spray Events"
+                value={String(stats.sprays)}
+                subValue={stats.sprays > 0 ? `~${(stats.sprays * 0.25).toFixed(1)}L used` : "No sprays yet"}
             />
             <AnalyticsCard
-                label="Missions"
-                value="8"
-                subValue="Avg: 18m"
+                label="Frames Processed"
+                value={stats.frames.toLocaleString()}
+                subValue={`${stats.fps.toFixed(1)} FPS`}
             />
             <AnalyticsCard
-                label="Efficiency"
-                value="98.2%"
-                subValue="Target: 95%"
+                label="Inference FPS"
+                value={stats.fps.toFixed(1)}
+                subValue="Real-time"
             />
         </div>
     );
